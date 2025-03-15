@@ -71,7 +71,6 @@ def initiate_front_end():
 
 
 def main():
-    print("hey there")
     # initiate_front_end()
     check_for_import()
    
