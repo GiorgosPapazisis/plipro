@@ -1,4 +1,5 @@
 from tkinter import *
+import csv
 
 default_activities=["Ύπνος", ]
 
@@ -52,6 +53,7 @@ class fileFoundEmpty:
         self.button = Button(self.frame, text="Create User", command=lambda:username_entry(self.entry.get(),master))
         self.button.pack(pady=20)
         
+
 class userDashboard:
     def __init__(self, master, username):
          #-----Title---------
@@ -62,50 +64,79 @@ class userDashboard:
         self.label = Label(self.master, text=text)
         self.label.pack()
 
-
         #-----User Entries---------
         self.frameEntries = Frame(master)
         self.labelActivityName=Label(self.frameEntries,text="Name").grid(row=0,column=0,padx=(20,0))
         self.labelDescription=Label(self.frameEntries,text="Description").grid(row=0,column=1,padx=(20,0))
         self.labelPriority=Label(self.frameEntries,text="Priority").grid(row=0,column=2,padx=(20,0))
         self.labelTime=Label(self.frameEntries,text="Time").grid(row=0,column=3,padx=(20,0))
-
-        #--------depracated-------------
-        # self.entryActivityName=Entry(self.frameEntries).grid(row=1,column=0,padx=(20,0))
-        # self.entryDescription=Entry(self.frameEntries).grid(row=1,column=1,padx=(20,0))
-        # self.entryPriority=Entry(self.frameEntries).grid(row=1,column=2,padx=(20,0))
-        # self.entryTime=Entry(self.frameEntries).grid(row=1,column=3,padx=(20,0))
-
         self.entryActivityName = Entry(self.frameEntries)
         self.entryActivityName.grid(row=1, column=0, padx=(20, 0))
-
         self.entryDescription = Entry(self.frameEntries)
         self.entryDescription.grid(row=1, column=1, padx=(20, 0))
-
         self.entryPriority = Entry(self.frameEntries)
         self.entryPriority.grid(row=1, column=2, padx=(20, 0))
-
         self.entryTime = Entry(self.frameEntries)
         self.entryTime.grid(row=1, column=3, padx=(20, 0))
-
         self.frameEntries.pack(pady=40)
 
         self.buttonAddActivity=Button(self.master, text="Create Activity", command=lambda:addActivity(self.entryActivityName.get(),
                                                                                                       self.entryDescription.get(),
                                                                                                       self.entryPriority.get(),
-                                                                                                      self.entryTime.get()
+                                                                                                      self.entryTime.get(),
+                                                                                                      username
         ))
         self.buttonAddActivity.pack()
 
-
-
+class pickUser:
+    def __init__(self, master):
+        self.master=master
+        self.master.geometry("800x600")
+        self.master.title("My Application")
+        users=userList()
         
 
-def addActivity(name, description, priority, time):
+
+def userList():
+    print("hello")
+    try:
+        with open("Activities.csv", newline='') as f:
+            count=1
+            users=[]
+            lineOne=f.readline(1)
+            users.append(lineOne)
+            for line in f:
+                print(f"line {count} = ", line)
+                count+=1
+                for user in users:
+                    if user==line[0] and users!=None:
+                        print("hello1")
+                        print(f"{line[0]} already exists!")
+                    elif users is None:
+                        print("hello2")
+                        users.append(line[0])
+        print("and the user list is ",users)
+    except FileNotFoundError:
+        print("no file found")
+
+def addActivity(name, description, priority, time, username):
     print(name)
+    checkName=checkDoubleEntry(name)
     print(description)
     print(priority)
-    print(time)      
+    print(time)
+    print(username)
+
+
+def checkDoubleEntry(value):
+    print("value is ",value)
+    try:
+        with open("Activities.csv") as f:
+            for line in f:
+                print(line)
+    except FileNotFoundError:
+        print("no file found")
+
 
 
 def username_entry(username, root):
@@ -145,7 +176,7 @@ def main():
     if check_import == "file_empty":
         run = fileFoundEmpty(root)
     else:
-        run = Window1(root)
+        run = pickUser(root)
     root.mainloop()
     print(check_import)
    
