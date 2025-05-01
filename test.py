@@ -15,7 +15,7 @@ class Activities:
 
 class Window1:
     def __init__(self, master):
-        # keep `root` in `self.master`
+        
         self.master = master 
 
         self.label = Button(self.master, text="Example", command=self.load_new)
@@ -23,13 +23,13 @@ class Window1:
 
     def load_new(self):
         self.label.destroy()
-        # use `root` with another class
+        
         self.another = Window2(self.master)
 
 
 class Window2:
     def __init__(self, master):
-        # keep `root` in `self.master`
+        
         self.master = master
         self.label = Label(self.master, text="Example")
         self.label.pack()
@@ -90,34 +90,38 @@ class userDashboard:
 
 class pickUser:
     def __init__(self, master):
-        self.master=master
+        self.master = master
         self.master.geometry("800x600")
         self.master.title("My Application")
-        users=userList()
+
+        users = userList()
+
+        self.label = Label(master, text="Pick your user")
+        self.label.pack(pady=20)
+
+        self.entry = Entry(master)
+        self.entry.pack(pady=10)
+
+        self.button = Button(master, text="Load User", command=lambda: username_entry(self.entry.get(), master))
+        self.button.pack(pady=10)
+
         
 
 
 def userList():
     print("hello")
+    users = set()
     try:
         with open("Activities.csv", newline='') as f:
-            count=1
-            users=[]
-            lineOne=f.readline(1)
-            users.append(lineOne)
-            for line in f:
-                print(f"line {count} = ", line)
-                count+=1
-                for user in users:
-                    if user==line[0] and users!=None:
-                        print("hello1")
-                        print(f"{line[0]} already exists!")
-                    elif users is None:
-                        print("hello2")
-                        users.append(line[0])
-        print("and the user list is ",users)
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) >= 5:
+                    users.add(row[4])  # username is 5th field
     except FileNotFoundError:
         print("no file found")
+    print("User list is:", users)
+    return list(users)
+
 
 def addActivity(name, description, priority, time, username):
     print(name)
