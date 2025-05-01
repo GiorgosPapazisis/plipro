@@ -25,15 +25,14 @@ class pickUser:
             print(users)
             cb_state='readonly'
         
-
-
-        
-        
         #dropdown
         cb = ttk.Combobox(master, values=users)
         cb['state'] = cb_state
         cb.set("Select a user")
         cb.pack()
+
+        self.button = Button(self.frame, text="Create User", command=lambda:username_entry(self.entry.get(),master))
+        self.button.pack(pady=20)
 
 
 
