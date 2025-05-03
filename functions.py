@@ -42,9 +42,9 @@ def create_user(username):
             create_csv(username)
             check_user_existance=check_duplicate_file(username)
             if check_user_existance is True:
-                print(f"the file for user '{username}' was created")
+                return f"the file for user '{username}' was created"
             else:
-                print(f"the file for user '{username}' wasnt created")
+                return f"the file for user '{username}' wasnt created"
     except:
         print("The user wasn't create")
 
@@ -73,6 +73,29 @@ def list_users():
     print("user list:",users)
     return users
 
+
+
+def check_file_stracture(username):
+    file_name=username+'.csv'
+    file_path = os.path.join(base_dir, 'csv', file_name)
+    try:
+        with open(file_path) as f:
+            file=f.read() 
+            for line in file.split('\n'):
+                value_counter=0
+                for value in line.split(','):
+                    value_counter+=1
+                if value_counter>4:
+                    raise Exception("The structure of the file is not correct")
+                else:
+                    print("the file is okay")
+                    return {'message':'The file structure of the user is okay', 'message_type':'success' }
+    except Exception as error:
+        return {'message':error, 'message_type':'error' }
+        
+
+
+    
     
     
     
