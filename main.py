@@ -35,9 +35,9 @@ class pickUser:
                 file_structure=check_file_stracture(username)
                 print("file_structure.message_type is ",file_structure.message_type)
                 if file_structure.message_type=="error":
-                    file_need_fix_route(root,username)
+                    file_need_fix_route(root,username) #routes
                 else:
-                    user_activities_route(root,username)
+                    user_activities_route(root,username) #routes
                 
 
         cb.bind('<<ComboboxSelected>>', user_selected)
@@ -79,6 +79,7 @@ class activitiesUser:
         self.view_mode = 'table'
         self.button = Button(root, text="Back", command=lambda: pick_user_route(root))
         self.button.pack(pady=10)
+        #create activity button
         self.toggle_button = Button(root, text="Change View", command=self.change_view)
         self.toggle_button.pack(pady=10)
         self.child_object = self.load_table_view()
@@ -164,7 +165,13 @@ class fileFixingValidation:
             self.label.config(text=result.message, fg="red")
 
         
-        
+
+class Graph:
+    def __init__(self, root):
+        self.root = root
+        self.root.geometry("800x600")
+        self.root.title("My Application")
+       
 
 
 
