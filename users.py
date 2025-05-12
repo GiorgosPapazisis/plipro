@@ -1,4 +1,5 @@
 from tkinter import *
+import pandas as pd
 
 class Users():
 
@@ -9,23 +10,23 @@ class Users():
 
 
 # Εξετάζει αν υπάρχει το αρχείο των users
-# Αν το αρχείο δεν υπάρχει, ανάλογο μήνυμα και δυνατότητα δημιουργίας χρήστη (no_usersFile_found)
 # Αν υπάρχει και είναι άδειο, δυνατότητα δημιουργίας χρήστη (usersFile_isEmpty)
 # Αν έχει εγγραφές, εμφάνιση όλων και επιλογή του χρήστη (display_allUsers)
+# Αν το αρχείο δεν υπάρχει, ανάλογο μήνυμα και δυνατότητα δημιουργίας χρήστη (no_usersFile_found)
 def check_usersFile():
     try:
-        with open("Users.csv") as f:
+        with open("users.csv") as f:
             file = f.read()
             print(file)
             if not file:
                 print("File is empty")
-                create_user_page("empty")
+                usersFile_isEmpty()
             else:
-                print("Opening Users.csv file")
+                print("Opening users.csv file")
                 display_allUsers() 
     except FileNotFoundError:
         print("File not found.")
-        create_user_page("nofile")
+        no_usersFile_found()
 
 
 # Παράθυρο δημιουργίας νέου χρήστη
@@ -37,14 +38,14 @@ def create_user_page(message):
 # Create User button
 # Quit Button
 def no_usersFile_found():
-    pass
+    create_user_page("nofile")
 
 
 # Το αρχείο βρέθηκε αλλά είναι άδειο, ανάλογο μήνυμα
 # Create User button
 # Quit Button
 def usersFile_isEmpty():
-    pass
+    create_user_page("empty")
 
 
 # Παράθυρο με όλους τους users
