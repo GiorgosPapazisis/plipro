@@ -17,8 +17,7 @@ class Users():
 def check_usersFile():
     try:
         with open("users.csv") as f:
-            file = f.readline()
-            print(file)
+            file = f.read()
             if not file:
                 print("File is empty")
                 usersFile_isEmpty()
@@ -36,15 +35,25 @@ def csvFile_validation():
     with open("users.csv") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         header = next(csv_reader)
+        valid_headers = 0
+        valid_rows = 0
 
         if ((header[0].strip() == 'id') and (header[1].strip() == 'name') and (header[2].strip() == 'role')):
-            print("Valid headers")
-        else: 
-            print("Invalid headers")
+            valid_headers = 1
 
         for row in csv_reader:
-            if (len(row) > 3):
-                print("File invalid, too many columns")
+            if (len(row) == 3):
+                valid_rows = 1
+        
+        if ((valid_headers == 1) and (valid_rows == 1)):
+            print("Valid csv file")
+        else:
+            if ((valid_headers == 1) and (valid_rows == 0)):
+                print("Invalid rows")
+            elif ((valid_headers == 0) and (valid_rows == 1)):
+                print("Invalid headers")
+            else:
+                print("File has invalid headers and rows")
 
 
 # Το αρχείο βρέθηκε αλλά είναι άδειο, ανάλογο μήνυμα
