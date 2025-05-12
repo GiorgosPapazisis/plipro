@@ -60,7 +60,7 @@ def csvFile_validation():
 # Create User button
 # Quit Button
 def usersFile_isEmpty():
-    create_user_page("empty")
+    create_users_page("empty")
 
 
 # Παράθυρο με όλους τους users
@@ -74,11 +74,11 @@ def display_allUsers():
 # Create User button
 # Quit Button
 def no_usersFile_found():
-    create_user_page("nofile")
+    create_users_page("nofile")
 
 
 # Παράθυρο δημιουργίας νέου χρήστη
-def create_user_page(message):
+def create_users_page(message):
     print("ok")
 
 
