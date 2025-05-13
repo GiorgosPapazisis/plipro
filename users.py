@@ -1,33 +1,63 @@
 from tkinter import *
 import pandas as pd
 import csv 
+import os
 
+# base directory of the project
+base_dir = os.path.dirname(__file__)
+# csv folder directory
+csv_folder = os.path.join(base_dir, 'csv')
+
+
+# Users class to initiate user
 class Users():
-
     def __init__(self, id, name, role):
         self.id = id
         self.name = name
         self.role = role
 
 
-# function που εξετάζει αν υπάρχει το αρχείο των users
-# Αν υπάρχει και είναι άδειο, δυνατότητα δημιουργίας χρήστη (usersFile_isEmpty)
-# Αν έχει εγγραφές, εμφάνιση όλων και επιλογή του χρήστη (display_allUsers)
-# Αν το αρχείο δεν υπάρχει, ανάλογο μήνυμα και δυνατότητα δημιουργίας χρήστη (no_usersFile_found)
+# Check if csv folder exists
+# True -> calls check_usersFile()
+# False -> create folder and calls check_usersFile()
+def check_csvFolder():
+    csv_folder = os.path.join(base_dir, 'csv')
+    if os.path.exists(csv_folder):
+        print('Csv folder exists')
+        check_usersFile()
+    else:
+        print('csv folder do not exists. Creating...')
+        try:
+            os.mkdir('csv')
+            print('csv folder created successfully')
+            check_usersFile()
+        except Exception as error:
+            print(f'An error has occurred: {error}')
+
+
+# Check if users.csv exists in csv folder
+# If exists and is empty -> msg and calls usersFile_isEmpty
+# If exists and is not empty -> calls display_allUsers
+# If not found -> msg, create empty users.csv file and calls usersFile_isEmpty
 def check_usersFile():
+    csv_folder = os.path.join(base_dir, 'csv')
+    users_file = os.path.join(csv_folder, 'users.csv')
+    
     try:
-        with open("users.csv") as f:
+        with open(users_file) as f:
             file = f.read()
             if not file:
                 print("File is empty")
                 usersFile_isEmpty()
             else:
                 print("Opening users.csv file")
-                csvFile_validation()
                 display_allUsers() 
     except FileNotFoundError:
-        print("File not found.")
-        no_usersFile_found()
+        print("File not found. users.csv is creating...")
+        with open(users_file, 'w') as f:
+            f.write('')
+        print('users.csv created successfully')
+        usersFile_isEmpty()
 
 
 # Function που εξετάζει αν το αρχείο που ανοίχτηκε είναι valid
@@ -67,14 +97,8 @@ def usersFile_isEmpty():
 # Checklist, για επιλογή χρήστη
 # Next button, για σύνδεση του χρήστη με το file του
 def display_allUsers():
-    pass
-
-
-# Το αρχείο δεν βρέθηκε, ανάλογο μήνυμα
-# Create User button
-# Quit Button
-def no_usersFile_found():
-    create_users_page("nofile")
+    csvFile_validation()
+    
 
 
 # Παράθυρο δημιουργίας νέου χρήστη
@@ -84,7 +108,7 @@ def create_users_page(message):
 
 
 def main():
-    check_usersFile()
+    check_csvFolder()
 
 if __name__ == "__main__":
     main()
