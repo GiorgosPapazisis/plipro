@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import pandas as pd
 import csv 
 import os
@@ -16,6 +17,46 @@ class Users():
     def __init__(self, id, name):
         self.id = id
         self.name = name
+
+    def create_newUser(self, frame_root, entry_widget):
+        username = entry_widget.get().strip() 
+        
+        if not username:
+            print("Username can not be empty")
+            label_error = Label(frame_root, text="Enter username. Can not be empty", fg="red")
+            label_error.pack()
+        else:
+            with open(users_file, 'r', newline='') as f:
+                username_exists = False
+                reader = csv.reader(f)
+                next(reader)
+                for row in reader:
+                    print(row[1].strip())
+                    if row[1].strip() == username.strip():
+                        username_exists = True
+                        print("ok")
+                        break
+
+                if username_exists:
+                    label_error = Label(frame_root, text="This Username already exists. Please type another", fg="red")
+                    label_error.pack()
+                    entry_widget.delete(0, END)
+                else:
+                    label_error = Label(frame_root, text="Nice name", fg="green")
+                    label_error.pack()
+                    entry_widget.delete(0, END)
+                    with open(users_file, 'r', newline='') as f:
+                        reader = csv.reader(f)
+                        next(reader)
+                        for row in reader:
+                            last_id = row[0]
+                    new_user = [int(last_id) + 1, username]
+                    with open(users_file, 'a', newline='') as f:
+                        writer = csv.writer(f)
+                        writer.writerow(new_user)
+
+            
+  
 
 
 # Check if csv folder exists
@@ -76,7 +117,7 @@ def is_file_empty(file):
         return not first_line.strip()
     
 
-# Function που εξετάζει αν το αρχείο που ανοίχτηκε είναι valid
+# Check if file is valid, has headers, right number o cols, no blank rows
 def csvFile_validation(file):
     valid_rows = []
     invalid_rows = []
@@ -90,6 +131,8 @@ def csvFile_validation(file):
                 print("File is empty. Creating headers...")
                 create_headers(file)
                 print("Headers created successfully")
+                print("Your file is valid")    
+                print("\t- Validation check passed successfully") 
                 msg = 'empty'
                 return msg    
         
@@ -110,6 +153,7 @@ def csvFile_validation(file):
 
             print("Your file is valid")    
             print("\t- Validation check passed successfully") 
+
             if (len(valid_rows) != 0):
                 msg = 'display_all'   
                 return msg
@@ -143,14 +187,32 @@ def display_allUsers():
     except Exception as error:
         print(f"An error has occurred: {error}")
     
-    
 
-# Παράθυρο δημιουργίας νέου χρήστη
-def create_users_page(message):
+
+# Create Users Section window
+def create_users_page(message, frame_root):
     if (message == 'empty'):
-        print("ok, empty")
+        frame_empty = ttk.Frame(frame_root, padding=10)
+        frame_empty.pack(pady=10)
+        label_createUser = ttk.Label(frame_empty, text="Create the first user")
+        label_createUser.pack()
+        entry_username = Entry(frame_empty, name='entry_username')
+        entry_username.pack()
+        btn_createUser = ttk.Button(frame_root, text='Create New User', command=lambda: Users(0, "").create_newUser(frame_empty, entry_username))
+        btn_createUser.pack(pady=1)
+        btn_quit = ttk.Button(frame_root, text='Quit', command=frame_root.destroy)
+        btn_quit.pack()
     elif (message == 'display_all'):
-        print("ok, display all")
+        frame_empty = ttk.Frame(frame_root, padding=10)
+        frame_empty.pack(pady=10)
+        label_createUser = ttk.Label(frame_empty, text="Create new user")
+        label_createUser.pack()
+        entry_username = Entry(frame_empty, name='entry_username')
+        entry_username.pack()
+        btn_createUser = ttk.Button(frame_root, text='Create New User', command=lambda: Users(0, "").create_newUser(frame_empty, entry_username))
+        btn_createUser.pack(pady=1)
+        btn_quit = ttk.Button(frame_root, text='Quit', command=frame_root.destroy)
+        btn_quit.pack()
     else:
         pass
 
@@ -164,12 +226,11 @@ def main():
     root.title("Select User Section")
     root.geometry('800x800')
     if (msg == 'display_all'):
-        label = Label(root, text='Select user below')
+        create_users_page(msg, root)
     elif (msg == 'empty'): 
-        label = Label(root, text="Create your first User" )    
-    label.pack()
-    create_users_page(msg)
+        create_users_page(msg, root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
