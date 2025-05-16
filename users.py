@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-import pandas as pd
-import csv 
-import os
+from users_helpers import *
 
 # base directory of the project
 base_dir = os.path.dirname(__file__)
@@ -10,211 +8,111 @@ base_dir = os.path.dirname(__file__)
 csv_folder = os.path.join(base_dir, 'csv')
 # users.csv file directory
 users_file = os.path.join(csv_folder, 'users.csv')
+# users.csv headers
+usersFile_header = ['id', 'name']
 
 
 # Users class to initiate user
 class Users():
+    # Object initialize 
     def __init__(self, id, name):
         self.id = id
         self.name = name
 
-    def create_newUser(self, frame_root, entry_widget):
+    # Create new user object
+    # @param frame_root -> parent frame
+    # @param entry_widget -> user's entry for username
+    # @param label_messageToUser -> label to configure depending the user's entry error (already exists or none username)
+    def create_newUser(self, frame_root, entry_widget, label_messageToUser):
+        # Take user name from entry and delete white spaces
         username = entry_widget.get().strip() 
         
         if not username:
             print("Username can not be empty")
-            label_error = Label(frame_root, text="Enter username. Can not be empty", fg="red")
-            label_error.pack()
+            label_messageToUser.config(text="Enter username. Can not be empty", fg="red")
         else:
             with open(users_file, 'r', newline='') as f:
                 username_exists = False
-                reader = csv.reader(f)
-                next(reader)
+                reader = csv.DictReader(f)
+
+                # Name already exists, handling
                 for row in reader:
-                    print(row[1].strip())
-                    if row[1].strip() == username.strip():
+                    if row['name'].strip() == username.strip():
                         username_exists = True
-                        print("ok")
                         break
 
                 if username_exists:
-                    label_error = Label(frame_root, text="This Username already exists. Please type another", fg="red")
-                    label_error.pack()
+                    label_messageToUser.config(text="This Username already exists. Please type another", fg="red")
                     entry_widget.delete(0, END)
+                # New name handling
                 else:
-                    label_error = Label(frame_root, text="Nice name", fg="green")
-                    label_error.pack()
                     entry_widget.delete(0, END)
+                    last_id = None
                     with open(users_file, 'r', newline='') as f:
-                        reader = csv.reader(f)
-                        next(reader)
+                        reader = csv.DictReader(f)
                         for row in reader:
-                            last_id = row[0]
-                    new_user = [int(last_id) + 1, username]
+                            if row and row['id'].isdigit():
+                                last_id = int(row['id'])
+                        if last_id is None:
+                            new_id = 10
+                        else:
+                            new_id = last_id + 1
+                    new_user = {'id' : new_id, 'name' : username}
                     with open(users_file, 'a', newline='') as f:
-                        writer = csv.writer(f)
+                        writer = csv.DictWriter(f, fieldnames=usersFile_header)
                         writer.writerow(new_user)
 
-            
-  
+                    # Refresh page, after successful save
+                    create_users_page('display_all', frame_root)
 
-
-# Check if csv folder exists
-# True -> calls check_usersFile()
-# False -> create folder and calls check_usersFile()
-def check_csvFolder():
-    csv_folder = os.path.join(base_dir, 'csv')
-    if os.path.exists(csv_folder):
-        print('Csv folder exists')
-    else:
-        print('csv folder do not exists. Creating...')
-        try:
-            os.mkdir('csv')
-            print('csv folder created successfully')
-        except Exception as error:
-            print(f'An error has occurred: {error}')
-    print("\t- Folder check passed successfully")
-
-
-# Check if users.csv exists in csv folder
-# If exists and is empty -> msg and calls usersFile_isEmpty
-# If exists and is not empty -> calls display_allUsers
-# If not found -> msg, create empty users.csv file and calls usersFile_isEmpty
-def check_usersFile():
-    csv_folder = os.path.join(base_dir, 'csv')
-    users_file = os.path.join(csv_folder, 'users.csv')
-    
-    try:
-        with open(users_file) as f:
-            file = f.readline()
-            if not file:
-                print("File is empty")
-                print("\t- File check passed successfully")
-            else:
-                print("Opening users.csv file")
-                print("\t- File check passed successfully")
-    except FileNotFoundError:
-        print("File not found. users.csv is creating...")
-        with open(users_file, 'w') as f:
-            f.write('')
-        print('users.csv created successfully')
-        print("\t- File check passed successfully")
-    
-
-
-# Create columns of users.csv
-def create_headers(file):
-    with open(file, 'w', newline='') as csvfile:
-        header = ['id', 'name']
-        writer = csv.writer(csvfile)
-        writer.writerow(header)
-
-
-# Check if a file is empty or has wite spaces
-def is_file_empty(file):
-    with open(file, 'r') as f:
-        first_line = f.readline()
-        return not first_line.strip()
-    
-
-# Check if file is valid, has headers, right number o cols, no blank rows
-def csvFile_validation(file):
-    valid_rows = []
-    invalid_rows = []
-
-    try:
-        with open(file, 'r') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-
-            # Empty file check
-            if is_file_empty(file):
-                print("File is empty. Creating headers...")
-                create_headers(file)
-                print("Headers created successfully")
-                print("Your file is valid")    
-                print("\t- Validation check passed successfully") 
-                msg = 'empty'
-                return msg    
-        
-            # Invalid rows check 
-            for row in csv_reader:
-                if (len(row) == 2):
-                    valid_rows.append(row)
-                else:
-                    invalid_rows.append(row)
-
-            # Invalid rows delete
-            if (len(invalid_rows) != 0):
-                print("Deleting error rows...")
-                with open(file, 'w', newline ='') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(['id', 'name'])
-                    writer.writerows(valid_rows)
-
-            print("Your file is valid")    
-            print("\t- Validation check passed successfully") 
-
-            if (len(valid_rows) != 0):
-                msg = 'display_all'   
-                return msg
-    except Exception as error:
-        print(f"An error has occurred {error}")
-
-                        
-
-# Το αρχείο βρέθηκε αλλά είναι άδειο, ανάλογο μήνυμα
-# Create User button
-# Quit Button
-def usersFile_isEmpty():
-    msg = csvFile_validation(users_file)
-    try:
-        if (msg == 'csv_ok'):
-            window_msg = "empty"
-            create_users_page(window_msg)
-    except Exception as error:
-        print(f"An error has occurred: {error}")
-
-
-# Παράθυρο με όλους τους users
-# Checklist, για επιλογή χρήστη
-# Next button, για σύνδεση του χρήστη με το file του
-def display_allUsers():
-    msg = csvFile_validation(users_file)
-    try:
-        if (msg == 'csv_ok'):
-            window_msg = "display_all"
-            create_users_page(window_msg)
-    except Exception as error:
-        print(f"An error has occurred: {error}")
-    
 
 
 # Create Users Section window
+# @param message -> string, to know if file is empty or has users already
+# @param frame_root -> parent frame
 def create_users_page(message, frame_root):
+
+    # Destroy all children of frame_root
+    for widget in frame_root.winfo_children():
+        widget.destroy()
+
+    page_frame = ttk.Frame(frame_root)
+    page_frame.pack(fill='both', expand=True) 
+
+    label_messageToUser = Label(page_frame, text='', fg='red')
+    label_messageToUser.pack()
+
     if (message == 'empty'):
-        frame_empty = ttk.Frame(frame_root, padding=10)
-        frame_empty.pack(pady=10)
-        label_createUser = ttk.Label(frame_empty, text="Create the first user")
+        label_createUser = ttk.Label(page_frame, text="Create the first user")
         label_createUser.pack()
-        entry_username = Entry(frame_empty, name='entry_username')
+        entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
-        btn_createUser = ttk.Button(frame_root, text='Create New User', command=lambda: Users(0, "").create_newUser(frame_empty, entry_username))
+        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
         btn_createUser.pack(pady=1)
-        btn_quit = ttk.Button(frame_root, text='Quit', command=frame_root.destroy)
+        btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
     elif (message == 'display_all'):
-        frame_empty = ttk.Frame(frame_root, padding=10)
-        frame_empty.pack(pady=10)
-        label_createUser = ttk.Label(frame_empty, text="Create new user")
+        users = []
+        with open(users_file, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row['name']:
+                    users.append(row['name'])
+
+        label_createUser = ttk.Label(page_frame, text="Create new user")
         label_createUser.pack()
-        entry_username = Entry(frame_empty, name='entry_username')
+        entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
-        btn_createUser = ttk.Button(frame_root, text='Create New User', command=lambda: Users(0, "").create_newUser(frame_empty, entry_username))
+        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
         btn_createUser.pack(pady=1)
-        btn_quit = ttk.Button(frame_root, text='Quit', command=frame_root.destroy)
+        label_chooseUser = Label(page_frame, text="Choose user")
+        label_chooseUser.pack(pady=5)
+        combo_users = ttk.Combobox(page_frame, value=users, state="readonly")
+        combo_users.pack()
+        btn_selectedUser = ttk.Button(page_frame, text="Choose", command=lambda: print(combo_users.get()))
+        btn_selectedUser.pack()
+        btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
-    else:
-        pass
 
 
 
@@ -226,9 +124,15 @@ def main():
     root.title("Select User Section")
     root.geometry('800x800')
     if (msg == 'display_all'):
-        create_users_page(msg, root)
+        try:
+            create_users_page(msg, root)
+        except Exception as error:
+            print(f"An error has occurred: {error}")
     elif (msg == 'empty'): 
-        create_users_page(msg, root)
+        try:
+            create_users_page(msg, root)
+        except Exception as error:
+            print(f"An error has occurred: {error}")
     root.mainloop()
 
 
