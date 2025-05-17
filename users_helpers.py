@@ -1,5 +1,7 @@
 import csv
 import os
+from tkinter import filedialog
+
 
 # base directory of the project
 base_dir = os.path.dirname(__file__)
@@ -91,12 +93,12 @@ def csvFile_validation(file):
                 if not found_content:
                     is_empty = True
                 
-                if is_empty:
-                    print("File is empty. Creating headers...")
-                    create_headers(file)
-                    print("Headers created successfully\nYour file is valid\n\t- Validation check passed successfully")
-                    msg = 'empty'
-                    return msg    
+            if is_empty:
+                print("File is empty. Creating headers...")
+                create_headers(file)
+                print("Headers created successfully\nYour file is valid\n\t- Validation check passed successfully")
+                msg = 'empty'
+                return msg    
             
             # Error headers check
             headers = lines[0]
@@ -132,3 +134,18 @@ def csvFile_validation(file):
                 return msg
     except Exception as error:
         print(f"An error has occurred {error}")    
+
+
+def import_file():
+    file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Csv files", ".csv")])
+
+    if file_path:
+        print("selected file: ", file_path)
+        msg = csvFile_validation(file_path)
+        print(msg)
+        with open(file_path, 'r')as f:
+            reader = csv.DictReader(f)
+            with open(users_file, 'w') as fileNew:
+                
+
+    

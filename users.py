@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from users_helpers import *
 
 # base directory of the project
@@ -89,6 +90,9 @@ def create_users_page(message, frame_root):
         entry_username.pack()
         btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
         btn_createUser.pack(pady=1)
+        # Create an "Import File" button
+        import_button = ttk.Button(page_frame, text="Import File", command=import_file)
+        import_button.pack(pady=1)
         btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
     elif (message == 'display_all'):
@@ -111,9 +115,11 @@ def create_users_page(message, frame_root):
         combo_users.pack()
         btn_selectedUser = ttk.Button(page_frame, text="Choose", command=lambda: print(combo_users.get()))
         btn_selectedUser.pack()
+        # Create an "Import File" button
+        import_button = ttk.Button(page_frame, text="Import File", command=import_file)
+        import_button.pack(pady=1)
         btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
-
 
 
 def main():
