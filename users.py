@@ -28,6 +28,7 @@ class Users():
         # Take user name from entry and delete white spaces
         username = entry_widget.get().strip() 
         
+        # White space username
         if not username:
             print("Username can not be empty")
             label_messageToUser.config(text="Enter username. Can not be empty", fg="red")
@@ -41,7 +42,8 @@ class Users():
                     if row['name'].strip() == username.strip():
                         username_exists = True
                         break
-
+            
+                # Username already exists, delete entry
                 if username_exists:
                     label_messageToUser.config(text="This Username already exists. Please type another", fg="red")
                     entry_widget.delete(0, END)
@@ -66,8 +68,6 @@ class Users():
                     # Refresh page, after successful save
                     create_users_page('display_all', frame_root)
 
-
-
 # Create Users Section window
 # @param message -> string, to know if file is empty or has users already
 # @param frame_root -> parent frame
@@ -77,22 +77,27 @@ def create_users_page(message, frame_root):
     for widget in frame_root.winfo_children():
         widget.destroy()
 
+    # Main frame of the root
     page_frame = ttk.Frame(frame_root)
     page_frame.pack(fill='both', expand=True) 
 
+    # Label, msg to user for errors(already user exist / white spaces username)
     label_messageToUser = Label(page_frame, text='', fg='red')
     label_messageToUser.pack()
 
     if (message == 'empty'):
+        # Create new user label
         label_createUser = ttk.Label(page_frame, text="Create the first user")
         label_createUser.pack()
         entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
+        # Create btn
         btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
         btn_createUser.pack(pady=1)
         # Create an "Import File" button
         import_button = ttk.Button(page_frame, text="Import File", command=import_file)
         import_button.pack(pady=1)
+        # Quit btn
         btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
     elif (message == 'display_all'):
@@ -103,21 +108,28 @@ def create_users_page(message, frame_root):
                 if row['name']:
                     users.append(row['name'])
 
+        # Create new user label
         label_createUser = ttk.Label(page_frame, text="Create new user")
         label_createUser.pack()
+        # Entry for user's username
         entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
+        # Create btn
         btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
         btn_createUser.pack(pady=1)
+        # Label choose user
         label_chooseUser = Label(page_frame, text="Choose user")
         label_chooseUser.pack(pady=5)
+        # Combobox for existed users
         combo_users = ttk.Combobox(page_frame, value=users, state="readonly")
         combo_users.pack()
+        # Select user btn
         btn_selectedUser = ttk.Button(page_frame, text="Choose", command=lambda: print(combo_users.get()))
         btn_selectedUser.pack()
         # Create an "Import File" button
-        import_button = ttk.Button(page_frame, text="Import File", command=import_file(frame_root))
+        import_button = ttk.Button(page_frame, text="Import File", command=lambda: import_file(frame_root, create_users_page))
         import_button.pack(pady=1)
+        # Quit btn
         btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
 

@@ -2,6 +2,7 @@ import csv
 import os
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import *
 
 
 # base directory of the project
@@ -95,14 +96,14 @@ def file_validation(file):
                     is_empty = True
             
             if is_empty:
-                print(f"File: {file}, is empty\nFile is invalid\n\tValidation check failed")
+                print(f"\nFile: {file}, is empty\nFile is invalid\n\tValidation check failed")
                 msg = 'need_fix'
                 return msg
 
             # Error headers check
             headers = lines[0]
             if (headers != ['id', 'name']):
-                print(f"Wrong headers\nYour file: {file}, is invalid\n\tValidation check failed")
+                print(f"\nWrong headers\nYour file: {file}, is invalid\n\tValidation check failed")
                 msg = 'need_fix'
                 return msg
 
@@ -114,11 +115,11 @@ def file_validation(file):
                     invalid_rows.append(row)
             
             if invalid_rows:
-                print(f"Invalid row/s in file\nYour file: {file}, is invalid\n\t- Validation check failed")
+                print(f"\nInvalid row/s in file\nYour file: {file}, is invalid\n\t- Validation check failed")
                 msg = 'need_fix'
                 return msg
             
-            print(f"Your file: {file}, is valid\n\t- Validation check passed successfully")
+            print(f"\nYour file: {file}, is valid\n\t- Validation check passed successfully")
             msg = 'valid'
             return msg
         
@@ -183,7 +184,7 @@ def invalidFile_fix(file):
                     writer.writeheader()
                     writer.writerows(valid_rows)
 
-            print("Your file is valid\n\t- Validation check passed successfully")    
+            print(f"Your file: {file} is valid\n\t- Validation check passed successfully")    
 
             if valid_rows:
                 msg = 'display_all'   
@@ -195,31 +196,36 @@ def invalidFile_fix(file):
         print(f"An error has occurred {error}")    
 
 
-
-def import_file(window_root):
+# User imports a csv file. validation and fixing errors
+# @param window_root -> pass main frame root
+# @param refresh_callback -> pass a function, in order to handle undefined error
+# @return 
+def import_file(window_root, refresh_callback):
+    # initial var in file's path
     file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Csv files", ".csv")])
-
+     
+    # If file's path exist  
     if file_path:
-        print("selected file: ", file_path)
-        
-        if file_path:
+        # Validate file
+        msg = file_validation(file_path)
+        # If file needs fix
+        if msg == 'need_fix':
+            # create a popup window
+            popup = Toplevel()
+            popup.title("Warning")
+            popup.geometry('400x100')
+            Label(popup, text="Errors need fixing. Do you want to fix them for you?", fg='red').pack()
 
-            msg = file_validation(file_path)
-            if msg == 'need_fix':
-                response = messagebox.askyesno("File needs fixing.\nClick yes to fix or no to cancel th import.", icon='warning')
+            # Yes btn function, in order to fix imported file
+            def fix_refresh():
+                fixedFile_msg = invalidFile_fix(file_path)
+                popup.destroy()
+                refresh_callback(fixedFile_msg, window_root)
 
-                if response:
-                    fixedFile_msg = invalidFile_fix(file_path)
-                    print(fixedFile_msg)
+            # Yes / No btns on popup
+            Button(popup, text='Yes', command=lambda: fix_refresh()).pack()
+            Button(popup, text='Cancel', command=popup.destroy).pack()
+
 
             
-
-
-        # msg = csvFile_validation(file_path)
-        # print(msg)
-        # with open(file_path, 'r')as f:
-        #     reader = csv.DictReader(f)
-        #     with open(users_file, 'w') as fileNew:
-        #         pass
-
     
