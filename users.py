@@ -116,7 +116,7 @@ def create_users_page(message, frame_root):
         btn_selectedUser = ttk.Button(page_frame, text="Choose", command=lambda: print(combo_users.get()))
         btn_selectedUser.pack()
         # Create an "Import File" button
-        import_button = ttk.Button(page_frame, text="Import File", command=import_file)
+        import_button = ttk.Button(page_frame, text="Import File", command=import_file(frame_root))
         import_button.pack(pady=1)
         btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
@@ -125,7 +125,7 @@ def create_users_page(message, frame_root):
 def main():
     check_csvFolder()
     check_usersFile()
-    msg = csvFile_validation(users_file)
+    msg = invalidFile_fix(users_file)
     root = Tk()
     root.title("Select User Section")
     root.geometry('800x800')
