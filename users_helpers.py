@@ -211,6 +211,24 @@ def create_popup(msg, color):
     Button(popup, text='Continue', command=popup.destroy).pack()
 
 
+
+# Copy file's content to another file
+# @param users_imported_file -> str full path of file, user imported
+# @param new_usersFile -> str full path of csv/users.csv in order to copy all imported file's data
+# @return void
+def copy_files_content(users_imported_file, new_usersFile):
+    try:
+        with open(users_imported_file, 'r') as users_oldFile:
+            reader = csv.DictReader(users_oldFile)
+            usersData = list(reader)
+            with open(new_usersFile, 'w', newline='') as newUsers_csv:
+                writer = csv.DictWriter(newUsers_csv, fieldnames=usersFile_header)
+                writer.writeheader()
+                for row in usersData:
+                    writer.writerow(row)
+    except Exception as error:
+        print(f"An error has occurred {error}")
+
 # User imports a csv file. validation and fixing errors
 # @param window_root -> pass main frame root
 # @param refresh_callback -> pass a function, in order to handle undefined error
@@ -233,26 +251,35 @@ def import_file(window_root, refresh_callback):
             Label(popup, text="Errors need fixing. Do you want to fix them for you?", fg='red').pack()
 
             # Yes btn function, in order to fix imported file
-            def fix_refresh():
-                fixedFile_msg = invalidFile_fix(file_path)
-                with open(file_path, 'r') as users_oldFile:
-                    reader = csv.DictReader(users_oldFile)
-                    usersData = list(reader)
-                    with open(users_file, 'w', newline='') as newUsers_csv:
-                        writer = csv.DictWriter(newUsers_csv, fieldnames=usersFile_header)
-                        for row in usersData:
-                            new_row = {'id': row['id'], 'name': row['name']}
-                            writer.writerow(new_row)
-
-                popup.destroy()
-                refresh_callback(fixedFile_msg, window_root)
+            def fix_refresh(): 
+                try:
+                    # Fix file
+                    fixedFile_msg = invalidFile_fix(file_path)
+                    # Copy file's data
+                    copy_files_content(file_path, users_file)
+                    popup.destroy()
+                    # Refresh window
+                    refresh_callback(fixedFile_msg, window_root)
+                    # Create popup, success msg
+                    create_popup('File imported successfully', 'green')
+                except Exception as error:
+                    print(f"An error has occurred {error}")
 
             # Yes / No btns on popup
             Button(popup, text='Yes', command=lambda: fix_refresh()).pack()
             Button(popup, text='Cancel', command=popup.destroy).pack()
         else:
-            create_popup(f"Your file: {file_path}, is valid", "green")
-
+            try:
+                # Copy file's data
+                copy_files_content(file_path, users_file)
+                # Fix file(optional), in order to save returned msg of what kind window to create(empty / display_all)
+                fixedFile_msg = invalidFile_fix(users_file)
+                # Refresh window
+                refresh_callback(fixedFile_msg, window_root)
+                # Create popup, success msg
+                create_popup(f"Your file: {file_path}, is valid\nImported successful", "green")
+            except Exception as error:
+               print(f"An error has occurred {error}") 
 
             
     
