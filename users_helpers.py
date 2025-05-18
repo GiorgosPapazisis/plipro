@@ -146,6 +146,6 @@ def import_file():
         with open(file_path, 'r')as f:
             reader = csv.DictReader(f)
             with open(users_file, 'w') as fileNew:
-                
+                pass
 
     
