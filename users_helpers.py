@@ -196,6 +196,20 @@ def invalidFile_fix(file):
         print(f"An error has occurred {error}")    
 
 
+# Create a popup window
+# @param msg -> str for the shown msg
+# #param color -> str for the color of fg attribute 
+def create_popup(msg, color):
+    # create a popup window
+    popup = Toplevel()
+    popup.title("Message")
+    popup.geometry('400x100')
+    Label(popup, text=msg, fg=color).pack()
+
+    # Yes / No btns on popup
+    Button(popup, text='Continue', command=popup.destroy).pack()
+
+
 # User imports a csv file. validation and fixing errors
 # @param window_root -> pass main frame root
 # @param refresh_callback -> pass a function, in order to handle undefined error
@@ -208,6 +222,7 @@ def import_file(window_root, refresh_callback):
     if file_path:
         # Validate file
         msg = file_validation(file_path)
+    
         # If file needs fix
         if msg == 'need_fix':
             # create a popup window
@@ -225,6 +240,8 @@ def import_file(window_root, refresh_callback):
             # Yes / No btns on popup
             Button(popup, text='Yes', command=lambda: fix_refresh()).pack()
             Button(popup, text='Cancel', command=popup.destroy).pack()
+        else:
+            create_popup(f"Your file: {file_path}, is valid", "green")
 
 
             

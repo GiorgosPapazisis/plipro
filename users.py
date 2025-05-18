@@ -31,7 +31,7 @@ class Users():
         # White space username
         if not username:
             print("Username can not be empty")
-            label_messageToUser.config(text="Enter username. Can not be empty", fg="red")
+            create_popup("Enter username. Can not be empty", "red")
         else:
             with open(users_file, 'r', newline='') as f:
                 username_exists = False
@@ -45,7 +45,7 @@ class Users():
             
                 # Username already exists, delete entry
                 if username_exists:
-                    label_messageToUser.config(text="This Username already exists. Please type another", fg="red")
+                    create_popup("This Username already exists. Please type another", "red")
                     entry_widget.delete(0, END)
                 # New name handling
                 else:
@@ -67,6 +67,8 @@ class Users():
 
                     # Refresh page, after successful save
                     create_users_page('display_all', frame_root)
+                    create_popup('Your username saved successfully', 'green')
+
 
 # Create Users Section window
 # @param message -> string, to know if file is empty or has users already
