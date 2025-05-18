@@ -198,7 +198,8 @@ def invalidFile_fix(file):
 
 # Create a popup window
 # @param msg -> str for the shown msg
-# #param color -> str for the color of fg attribute 
+# @param color -> str for the color of fg attribute 
+# @return void
 def create_popup(msg, color):
     # create a popup window
     popup = Toplevel()
@@ -215,12 +216,12 @@ def create_popup(msg, color):
 # @param refresh_callback -> pass a function, in order to handle undefined error
 # @return 
 def import_file(window_root, refresh_callback):
-    # initial var in file's path
+    # Initial var in file's path
     file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Csv files", ".csv")])
      
     # If file's path exist  
     if file_path:
-        # Validate file
+        # Validation check of file
         msg = file_validation(file_path)
     
         # If file needs fix
@@ -234,6 +235,15 @@ def import_file(window_root, refresh_callback):
             # Yes btn function, in order to fix imported file
             def fix_refresh():
                 fixedFile_msg = invalidFile_fix(file_path)
+                with open(file_path, 'r') as users_oldFile:
+                    reader = csv.DictReader(users_oldFile)
+                    usersData = list(reader)
+                    with open(users_file, 'w', newline='') as newUsers_csv:
+                        writer = csv.DictWriter(newUsers_csv, fieldnames=usersFile_header)
+                        for row in usersData:
+                            new_row = {'id': row['id'], 'name': row['name']}
+                            writer.writerow(new_row)
+
                 popup.destroy()
                 refresh_callback(fixedFile_msg, window_root)
 

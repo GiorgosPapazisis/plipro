@@ -103,6 +103,7 @@ def create_users_page(message, frame_root):
         btn_quit = ttk.Button(page_frame, text='Quit', command=frame_root.destroy)
         btn_quit.pack()
     elif (message == 'display_all'):
+        invalidFile_fix(users_file)
         users = []
         with open(users_file, 'r') as f:
             reader = csv.DictReader(f)
