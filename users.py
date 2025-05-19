@@ -1,6 +1,5 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter import messagebox
 from users_helpers import *
 
 # base directory of the project
@@ -24,7 +23,7 @@ class Users():
     # @param frame_root -> parent frame
     # @param entry_widget -> user's entry for username
     # @param label_messageToUser -> label to configure depending the user's entry error (already exists or none username)
-    def create_newUser(self, frame_root, entry_widget, label_messageToUser):
+    def create_newUser(self, frame_root, entry_widget):
         # Take user name from entry and delete white spaces
         username = entry_widget.get().strip() 
         
@@ -71,7 +70,7 @@ class Users():
 
 
 # Create Users Section window
-# @param message -> string, to know if file is empty or has users already
+# @param message -> string, to know if file is empty or has saved users already
 # @param frame_root -> parent frame
 def create_users_page(message, frame_root):
 
@@ -83,10 +82,6 @@ def create_users_page(message, frame_root):
     page_frame = ttk.Frame(frame_root)
     page_frame.pack(fill='both', expand=True) 
 
-    # Label, msg to user for errors(already user exist / white spaces username)
-    label_messageToUser = Label(page_frame, text='', fg='red')
-    label_messageToUser.pack()
-
     if (message == 'empty'):
         # Create new user label
         label_createUser = ttk.Label(page_frame, text="Create the first user")
@@ -94,7 +89,7 @@ def create_users_page(message, frame_root):
         entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
         # Create btn
-        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
+        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username))
         btn_createUser.pack(pady=1)
         # Create an "Import File" button
         import_button = ttk.Button(page_frame, text="Import File", command=import_file)
@@ -117,7 +112,7 @@ def create_users_page(message, frame_root):
         entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
         # Create btn
-        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username, label_messageToUser))
+        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username))
         btn_createUser.pack(pady=1)
         # Label choose user
         label_chooseUser = Label(page_frame, text="Choose user")

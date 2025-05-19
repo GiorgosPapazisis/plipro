@@ -45,15 +45,14 @@ def check_usersFile():
         print("\t- File check passed successfully")
     except FileNotFoundError:
         print("File not found. users.csv is creating...")
-        with open(users_file, 'w', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=usersFile_header)
-            writer.writeheader()
+        create_headers(users_file)
         print('users.csv created successfully')
         print("\t- File check passed successfully")
     
 
-
 # Create headers of users.csv
+# @param file -> str full path to file, in order to create headers
+# @return void
 def create_headers(file):
     with open(file, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=usersFile_header)
@@ -69,8 +68,8 @@ def is_file_empty(file):
         return not first_line.strip()
     
 
-# Check if valid is valid, 2 cols, headers = ['id', 'name'], id = digit, no empty or invalid rows
-# @param file -> str path to file
+# Check if valid is valid, has 2 cols, headers = ['id', 'name'], id = digit, no empty or invalid rows
+# @param file -> str full path to file
 # @return str
 def file_validation(file):
     valid_rows = []
@@ -102,14 +101,14 @@ def file_validation(file):
 
             # Error headers check
             headers = lines[0]
-            if (headers != ['id', 'name']):
+            if (headers != usersFile_header):
                 print(f"\nWrong headers\nYour file: {file}, is invalid\n\tValidation check failed")
                 msg = 'need_fix'
                 return msg
 
             # Invalid rows check
             for row in lines[1:]:
-                if len(row) == 2 and row[1].strip() and row[0].isdigit():
+                if len(row) == 2 and row[0].isdigit() and row[1].strip():
                     valid_rows.append({'id': row[0], 'name': row[1]})
                 else:
                     invalid_rows.append(row)
@@ -128,7 +127,7 @@ def file_validation(file):
 
 
 # Check if file is valid, has headers, right number o cols, no blank rows
-# @param file -> file to check
+# @param file -> full path to file in order to fix it
 # @return msg -> string
 def invalidFile_fix(file):
     valid_rows = []
@@ -207,7 +206,7 @@ def create_popup(msg, color):
     popup.geometry('400x100')
     Label(popup, text=msg, fg=color).pack()
 
-    # Yes / No btns on popup
+    # Continue btn on popup
     Button(popup, text='Continue', command=popup.destroy).pack()
 
 
@@ -228,6 +227,8 @@ def copy_files_content(users_imported_file, new_usersFile):
                     writer.writerow(row)
     except Exception as error:
         print(f"An error has occurred {error}")
+
+
 
 # User imports a csv file. validation and fixing errors
 # @param window_root -> pass main frame root
