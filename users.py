@@ -19,11 +19,19 @@ class Users():
         self.id = id
         self.name = name
 
+
+    # Save new Users obj to users.csv
+    def save_newUser(self):
+        with open(users_file, 'a', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=usersFile_header)
+            writer.writerow({'id' : self.id, 'name' : self.name})
+
+
     # Create new user object
     # @param frame_root -> parent frame
     # @param entry_widget -> user's entry for username
     # @param label_messageToUser -> label to configure depending the user's entry error (already exists or none username)
-    def create_newUser(self, frame_root, entry_widget):
+    def handle_newUser(self, frame_root, entry_widget):
         # Take user name from entry and delete white spaces
         username = entry_widget.get().strip() 
         
@@ -59,10 +67,8 @@ class Users():
                             new_id = 10
                         else:
                             new_id = last_id + 1
-                    new_user = {'id' : new_id, 'name' : username}
-                    with open(users_file, 'a', newline='') as f:
-                        writer = csv.DictWriter(f, fieldnames=usersFile_header)
-                        writer.writerow(new_user)
+                    new_user = Users(new_id, username) 
+                    new_user.save_newUser()
 
                     # Refresh page, after successful save
                     create_users_page('display_all', frame_root)
@@ -89,7 +95,7 @@ def create_users_page(message, frame_root):
         entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
         # Create btn
-        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username))
+        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").handle_newUser(page_frame, entry_username))
         btn_createUser.pack(pady=1)
         # Create an "Import File" button
         import_button = ttk.Button(page_frame, text="Import File", command=import_file)
@@ -112,7 +118,7 @@ def create_users_page(message, frame_root):
         entry_username = Entry(page_frame, name='entry_username')
         entry_username.pack()
         # Create btn
-        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").create_newUser(page_frame, entry_username))
+        btn_createUser = ttk.Button(page_frame, text='Create New User', command=lambda: Users(0, "").handle_newUser(page_frame, entry_username))
         btn_createUser.pack(pady=1)
         # Label choose user
         label_chooseUser = Label(page_frame, text="Choose user")
