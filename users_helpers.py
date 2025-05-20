@@ -282,5 +282,18 @@ def import_file(window_root, refresh_callback):
             except Exception as error:
                print(f"An error has occurred {error}") 
 
-            
+
+# Return selected user from combobox as dictionary
+# @param frame_root -> frame obj which will destroy
+# @param chosenUser -> str from combobox
+# @return a dictionary
+def selected_user(frame_root, chosenUser):
+    with open(users_file, 'r') as f:
+        reader = csv.DictReader(f)
+        data = list(reader)
+
+        for user in data:
+            if (user['name'] == chosenUser):
+                frame_root.destroy()
+                return user
     

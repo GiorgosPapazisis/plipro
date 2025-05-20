@@ -127,7 +127,7 @@ def create_users_page(message, frame_root):
         combo_users = ttk.Combobox(page_frame, value=users, state="readonly")
         combo_users.pack()
         # Select user btn
-        btn_selectedUser = ttk.Button(page_frame, text="Choose", command=lambda: print(combo_users.get()))
+        btn_selectedUser = ttk.Button(page_frame, text="Choose", command=lambda: selected_user(frame_root, combo_users.get()))
         btn_selectedUser.pack()
         # Create an "Import File" button
         import_button = ttk.Button(page_frame, text="Import File", command=lambda: import_file(frame_root, create_users_page))
