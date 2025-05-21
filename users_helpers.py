@@ -295,5 +295,6 @@ def selected_user(frame_root, chosenUser):
         for user in data:
             if (user['name'] == chosenUser):
                 frame_root.destroy()
+                print(f"You choose user, with id: {user['id']} and name: {user['name']}")
                 return user
     
