@@ -89,6 +89,9 @@ class activitiesUser:
 
         self.delete_button = Button(root, text="Delete Selected Activity", command=self.delete_selected, state=DISABLED)
         self.delete_button.pack(pady=10)
+
+        self.sort_button = Button(root, text="Sort Activities", command=self.sort_activities_and_refresh)
+        self.sort_button.pack(pady=10)
         
 
         self.child_object = self.load_table_view()
@@ -122,6 +125,11 @@ class activitiesUser:
         self.update_button.config(state=state)
         self.delete_button.config(state=state)
 
+    def sort_activities_and_refresh(self):
+        print("hello")
+        sort_activities(self.username)
+        self.load_table_view()
+
 
 
 
@@ -129,7 +137,7 @@ class activitiesUser:
 class activityUserTable:
     def __init__(self, root, username):
         activities = load_activities(username)
-        self.tree = ttk.Treeview(root, columns=("name", "type", "duration", "priority"), show='headings')
+        self.tree = ttk.Treeview(root, columns=("name", "type", "duration", "priority"), show='headings',selectmode='browse')
         self.tree.pack(expand=True, fill='both', padx=20, pady=20)
 
         self.tree.heading("name", text="Activity Name")

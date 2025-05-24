@@ -288,5 +288,45 @@ def delete_activity(username, selected):
 
     print("Finished updating file.")
 
+
+
+
+
+def sort_activities(username):
+    file_name = username + '.csv'
+    csv_dir = os.path.join(base_dir, 'csv')
+    full_path = os.path.join(csv_dir, file_name)
+    with open(full_path, 'r', encoding='utf-8') as file:
+        free_time=[]
+        mandatory=[]
+        reader = csv.reader(file)
+        for row in reader:
+            if row[1]=='Υποχρεωτική':
+                mandatory.append(row)
+            elif row[1]=='Ελεύθερου Χρόνου':
+                free_time.append(row)
+            else:
+                print("error")
+
+
+        new_free_time = sorted(free_time, key=lambda x: x[3])
+        new_mandatory = sorted(mandatory, key=lambda x: x[3])
+
+
+    print(free_time)
+    print(new_free_time)
+    print(mandatory)
+    print(new_mandatory)
+    newlines=new_mandatory+new_free_time
+    print(newlines)
+    with open(full_path, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerows(newlines)
+                        
+                
+                
+            
+
+
     
 
