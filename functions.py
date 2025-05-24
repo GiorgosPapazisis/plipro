@@ -112,7 +112,7 @@ def check_file_stracture(username):
     file_name=username+'.csv'
     file_path = os.path.join(base_dir, 'csv', file_name)
     try:
-        with open(file_path) as f:
+        with open(file_path,encoding='utf-8') as f:
             file=f.read()
             lines=file.split('\n')
             if lines and lines[-1].strip() == '': #the last line '' if the last line has 1 element and is '' then remove it from the check
@@ -136,7 +136,7 @@ def fix_file_stracture(username):
     file_name = username + '.csv'
     file_path = os.path.join(base_dir, 'csv', file_name)
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
         # Only keep lines that are not empty after stripping
@@ -175,7 +175,7 @@ def load_activities(username):
     file_path = os.path.join(base_dir, 'csv', file_name)
     print(file_path)
     try:
-        with open(file_path,'r')as f:
+        with open(file_path,'r',encoding='utf-8')as f:
             activities=[]
             file=f.read()
             print(file)
@@ -199,17 +199,94 @@ def load_activities(username):
 
 
                         
+def add_activity(username,activity_name,activity_type,activity_duration,activity_priority):
+    file_name=username +'.csv'
+    csv_dir = os.path.join(base_dir, 'csv')
+    full_path=os.path.join(csv_dir,file_name)
+    print(full_path)
+    with open(full_path, 'a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        row = [activity_name, activity_type, activity_duration, activity_priority]
+        writer.writerow(row)
+    
 
-# def change_view(root,view):
-#     children=root.winfo_children()
-#     print(children)
-#     tree.destroy()
-#     if view=='table':
-#         view_mode='list'
+    
 
-#     elif view=='list':
-#         view_mode='table'
+def format_time(hours,mins):
+    hours = int(hours)
+    mins = int(mins)
+    print("hours=",hours)
+    print("mins=",mins)
+    hours_to_mins=hours*60
+    activity_duration=hours_to_mins+mins
+    print("final=",activity_duration)
+    return activity_duration
 
-#     return view_mode
+
+def format_time_reverse(activity_duration):
+    total_mins=int(activity_duration)
+    print("DEBUG total mins:",total_mins)
+    hours=total_mins//60
+    print("DEBUG hours:",hours)
+    mins=total_mins % 60
+    print("DEBUG mins:",mins)
+    return {"mins": mins , "hours":hours}
+
+
+
+def update_activity(username, activity_name, activity_type, activity_duration, activity_priority, old_data):
+    file_name = username + '.csv'
+    csv_dir = os.path.join(base_dir, 'csv')
+    full_path = os.path.join(csv_dir, file_name)
+    print("Updating file:", full_path)
+    updated_rows = []
+    
+    with open(full_path, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row != old_data:
+                updated_rows.append(row)
+
+    new_row = [activity_name, activity_type, activity_duration, activity_priority]
+    updated_rows.append(new_row)
+
+    with open(full_path, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerows(updated_rows)
+        
+    print("Row updated successfully.")
+    
+
+
+def delete_activity(username, selected):
+    print("Trying to delete row:", selected)
+
+    file_name = username + '.csv'
+    csv_dir = os.path.join(base_dir, 'csv')
+    full_path = os.path.join(csv_dir, file_name)
+    updated_rows = []
+    row_found = False
+    with open(full_path, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            print("Checking row:", row)
+            if (row[0] == str(selected[0]) and
+                row[1] == str(selected[1]) and
+                row[2] == str(selected[2]) and
+                row[3] == str(selected[3])):
+                print("Match found — skipping row:", row)
+                row_found = True
+                continue  # skip this row
+            updated_rows.append(row)
+
+    if not row_found:
+        print("No matching row found.")
+
+    with open(full_path, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerows(updated_rows)
+
+    print("Finished updating file.")
+
     
 
