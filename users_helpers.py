@@ -5,6 +5,7 @@ from tkinter import messagebox
 from tkinter import *
 
 
+
 # base directory of the project
 base_dir = os.path.dirname(__file__)
 # csv folder directory
@@ -74,12 +75,10 @@ def is_file_empty(file):
 def file_validation(file):
     valid_rows = []
     invalid_rows = []
-
     try: 
         with open(file, 'r') as file_toCheck:
             reader = csv.reader(file_toCheck)
             lines = list(reader)
-
             # Empty file check
             is_empty = False
             if not lines:
@@ -93,12 +92,10 @@ def file_validation(file):
                         break
                 if not found_content:
                     is_empty = True
-            
             if is_empty:
                 print(f"\nFile: {file}, is empty\nFile is invalid\n\tValidation check failed")
                 msg = 'need_fix'
                 return msg
-
             # Error headers check
             headers = lines[0]
             if (headers != usersFile_header):
@@ -112,16 +109,13 @@ def file_validation(file):
                     valid_rows.append({'id': row[0], 'name': row[1]})
                 else:
                     invalid_rows.append(row)
-            
             if invalid_rows:
                 print(f"\nInvalid row/s in file\nYour file: {file}, is invalid\n\t- Validation check failed")
                 msg = 'need_fix'
                 return msg
-            
             print(f"\nYour file: {file}, is valid\n\t- Validation check passed successfully")
             msg = 'valid'
             return msg
-        
     except Exception as error:
         print(f"An error has occurred {error}")
 
@@ -287,14 +281,51 @@ def import_file(window_root, refresh_callback):
 # @param frame_root -> frame obj which will destroy
 # @param chosenUser -> str from combobox
 # @return a dictionary
-def selected_user(frame_root, chosenUser):
-    with open(users_file, 'r') as f:
-        reader = csv.DictReader(f)
-        data = list(reader)
-
-        for user in data:
-            if (user['name'] == chosenUser):
-                frame_root.destroy()
-                print(f"You choose user, with id: {user['id']} and name: {user['name']}")
-                return user
+# def selected_user(frame_root, chosenUser):
+#     with open(users_file, 'r') as f:
+#         reader = csv.DictReader(f)
+#         data = list(reader)
     
+#         for user in data:
+#             if (user['name'] == chosenUser):
+#                 # frame_root.destroy()  #refactor
+                
+#                 user_activities_route(frame_root,user['name'])
+#                 print(f"You choose user, with id: {user['id']} and name: {user['name']}")
+#                 return user
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
