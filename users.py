@@ -7,6 +7,10 @@ from matplotlib import pyplot as plt
 from tkinter import messagebox
 
 
+base_dir = os.path.dirname(__file__)
+csv_path = file_path = os.path.join(base_dir, 'csv')
+
+
 
 # base directory of the project
 base_dir = os.path.dirname(__file__)
@@ -75,7 +79,7 @@ class Users():
                             new_id = last_id + 1
                     new_user = Users(new_id, username) 
                     new_user.save_newUser()
-
+                    create_user(username)
                     # Refresh page, after successful save
                     create_users_page('display_all', frame_root)
                     create_popup('Ο χρήστης δημιουργήθηκε με επιτυχία', 'green')
@@ -85,11 +89,13 @@ class Users():
 # @param message -> string, to know if file is empty or has saved users already
 # @param frame_root -> parent frame
 def create_users_page(message, frame_root):
-
+    print("2 Root type:", type(frame_root))
     # Destroy all children of frame_root
     for widget in frame_root.winfo_children():
         widget.destroy()
+    
 
+    
     # Main frame of the root
     page_frame = ttk.Frame(frame_root)
     page_frame.pack(fill='both', expand=True) 
@@ -130,7 +136,8 @@ def create_users_page(message, frame_root):
         label_chooseUser = Label(page_frame, text="Επιλέξτε χρήστη")
         label_chooseUser.pack(pady=5)
         # Combobox for existed users
-        combo_users = ttk.Combobox(page_frame, value=users, state="readonly")
+        # combo_users = ttk.Combobox(page_frame, value=users, state="readonly")
+        combo_users = ttk.Combobox(page_frame, value=list_users(), state="readonly")
         combo_users.pack()
         # Select user btn
         btn_selectedUser = ttk.Button(page_frame, text="Επιλογή", command=lambda: selected_user(frame_root, combo_users.get()))
@@ -150,6 +157,9 @@ def create_users_page(message, frame_root):
 # @return a dictionary
 #Αλλαγή λόγο circular import
 def selected_user(frame_root, chosenUser):
+    print("3 Root type:", type(frame_root))
+    tk_root = frame_root.winfo_toplevel() 
+    print("4 Root type:", type(tk_root))
     with open(users_file, 'r') as f:
         reader = csv.DictReader(f)
         data = list(reader)
@@ -157,10 +167,10 @@ def selected_user(frame_root, chosenUser):
         for user in data:
             if (user['name'] == chosenUser):
                 # frame_root.destroy()  #refactor
-                
-                user_activities_route(frame_root,user['name'])
-                print(f"You choose user, with id: {user['id']} and name: {user['name']}")
-                return user
+                print("2 the root is :",frame_root)
+                user_activities_route(tk_root, user['name'])
+                # print(f"You choose user, with id: {user['id']} and name: {user['name']}")
+                # return user
     
 
 def main():
@@ -168,6 +178,7 @@ def main():
     check_usersFile()
     msg = invalidFile_fix(users_file)
     root = Tk()
+    print("Root type:", type(root))
     root.title("Select User Section")
     root.geometry('800x800')
     if (msg == 'display_all'):
@@ -653,6 +664,20 @@ def add_activity(username,activity_name,activity_type,activity_duration,activity
         writer.writerow(row)
     
 
+
+def list_users():
+    tmp_list = os.listdir(csv_path)
+    users=[]
+    for file in tmp_list:
+        user=file.split('.')
+        print(user)
+        if user[0] == "users":
+            continue
+        else:
+            users.append(user[0])
+    print("user list:",users)
+    return users
+
     
 
 def format_time(hours,mins):
@@ -681,9 +706,9 @@ def create_csv(username):
     csv_dir = os.path.join(base_dir, 'csv')
     full_path=os.path.join(csv_dir,file_name)
     print(full_path)
-    with open(full_path, 'w', newline='') as file:
+    with open(full_path, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        field = ["activity_name", "activity_type", "activity_duration","activity_priority"]
+        field = ["Ύπνος", "Υποχρεωτική", "480","9"]
         writer.writerow(field)
         file.close
 
@@ -830,6 +855,7 @@ def pick_user_route(root):
 
 
 def user_activities_route(root,username):
+    print("the root is:", root)
     for child in root.winfo_children():
         child.destroy()
     activitiesUser(root,username)
