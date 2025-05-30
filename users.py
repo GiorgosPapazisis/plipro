@@ -89,7 +89,7 @@ class Users():
 # @param message -> string, to know if file is empty or has saved users already
 # @param frame_root -> parent frame
 def create_users_page(message, frame_root):
-    print("2 Root type:", type(frame_root))
+    # print("2 Root type:", type(frame_root))
     # Destroy all children of frame_root
     for widget in frame_root.winfo_children():
         widget.destroy()
@@ -157,9 +157,9 @@ def create_users_page(message, frame_root):
 # @return a dictionary
 #Αλλαγή λόγο circular import
 def selected_user(frame_root, chosenUser):
-    print("3 Root type:", type(frame_root))
+    # print("3 Root type:", type(frame_root))
     tk_root = frame_root.winfo_toplevel() 
-    print("4 Root type:", type(tk_root))
+    # print("4 Root type:", type(tk_root))
     with open(users_file, 'r') as f:
         reader = csv.DictReader(f)
         data = list(reader)
@@ -167,7 +167,7 @@ def selected_user(frame_root, chosenUser):
         for user in data:
             if (user['name'] == chosenUser):
                 # frame_root.destroy()  #refactor
-                print("2 the root is :",frame_root)
+                # print("2 the root is :",frame_root)
                 user_activities_route(tk_root, user['name'])
                 # print(f"You choose user, with id: {user['id']} and name: {user['name']}")
                 # return user
@@ -178,7 +178,7 @@ def main():
     check_usersFile()
     msg = invalidFile_fix(users_file)
     root = Tk()
-    print("Root type:", type(root))
+    # print("Root type:", type(root))
     root.title("Select User Section")
     root.geometry('800x800')
     if (msg == 'display_all'):
@@ -292,7 +292,7 @@ class activitiesUser:
     def show_info_window(self, title, message):
         info_window = Toplevel(self.root)
         info_window.title(title)
-        info_window.geometry("300x150")
+        info_window.geometry("400x150")
 
         label = Label(info_window, text=message, padx=20, pady=20, justify="left")
         label.pack(expand=True)
@@ -424,7 +424,7 @@ class addActivity:
     def __init__(self, parent, username, data, load_table_view):
         
         self.top = Toplevel(parent)  #ontop
-        self.top.geometry("300x400")
+        self.top.geometry("300x500")
         self.top.title("My Application")
         self.load_table_view = load_table_view
 
@@ -474,8 +474,8 @@ class addActivity:
             self.spinbox_hours.insert(0, time["hours"])
             self.spinbox_mins.delete(0, END)
             self.spinbox_mins.insert(0, time["mins"])
-            self.button = Button(self.top, text="Update Activity", command=lambda: self.on_update_activity(username,data))
-            self.button.pack(pady=30)
+            self.button_submit = Button(self.top, text="Update Activity", command=lambda: self.on_update_activity(username,data))
+            self.button_submit.pack(pady=30)
         else:
             print("no Data")
 
