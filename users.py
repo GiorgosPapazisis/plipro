@@ -108,18 +108,18 @@ def create_users_page(message, frame_root):
         btn_createUser = ttk.Button(page_frame, text='Δημιουργία νέου χρήστη', command=lambda: Users(0, "").handle_newUser(page_frame, entry_username))
         btn_createUser.pack(pady=1)
         # Create an "Import File" button
-        import_button = ttk.Button(page_frame, text="Ανεβάστε αρχείο", command=import_file)
+        import_button = ttk.Button(page_frame, text="Ανεβάστε αρχείο", command=lambda: import_file(frame_root))
         import_button.pack(pady=1)
         # Quit btn
         btn_quit = ttk.Button(page_frame, text='Έξοδος', command=frame_root.destroy)
         btn_quit.pack()
     elif (message == 'display_all'):
-        users = []
-        with open(users_file, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row['name']:
-                    users.append(row['name'])
+        # users = []
+        # with open(users_file, 'r') as f:
+        #     reader = csv.DictReader(f)
+        #     for row in reader:
+        #         if row['name']:
+        #             users.append(row['name'])
 
         # Create new user label
         label_createUser = ttk.Label(page_frame, text="Δημιουργήστε νέο χρήστη")
@@ -141,7 +141,8 @@ def create_users_page(message, frame_root):
         btn_selectedUser = ttk.Button(page_frame, text="Επιλογή", command=lambda: selected_user(frame_root, combo_users.get()))
         btn_selectedUser.pack()
         # Create an "Import File" button
-        import_button = ttk.Button(page_frame, text="Ανεβάστε αρχείο", command=lambda: import_file(frame_root, create_users_page))
+        # import_button = ttk.Button(page_frame, text="Ανεβάστε αρχείο", command=lambda: import_file(frame_root, create_users_page))
+        import_button = ttk.Button(page_frame, text="Ανεβάστε αρχείο", command=lambda: import_file(frame_root))
         import_button.pack(pady=1)
         # Quit btn
         btn_quit = ttk.Button(page_frame, text='Έξοδος', command=frame_root.destroy)
@@ -149,23 +150,68 @@ def create_users_page(message, frame_root):
 
 
 
+    def import_file(frame_root):
+        file_path = filedialog.askopenfilename(title="Select a CSV file", filetypes=[("CSV Files", "*.csv")])
+
+        if not file_path:
+            return
+        file_name = os.path.basename(file_path)
+        username = os.path.splitext(file_name)[0]
+        if not username:
+            create_popup("Could not extract a valid username from the file name.", "red")
+            return
+        try:
+            dest_dir = os.path.join(base_dir, "csv")
+            os.makedirs(dest_dir, exist_ok=True)
+            counter = 0
+            final_username = username
+            dest_path = os.path.join(dest_dir, f"{final_username}.csv")
+            while os.path.exists(dest_path):
+                counter += 1
+                final_username = f"{username}({counter})"
+                dest_path = os.path.join(dest_dir, f"{final_username}.csv")
+            copyfile(file_path, dest_path)
+            create_popup(f"File imported successfully as user '{final_username}'", "green")
+
+        #refresh gui
+            # create_users_page("display_all", frame_root)
+            user_activities_route(frame_root,final_username)
+
+        except Exception as e:
+            print(f"Error during import: {e}")
+            create_popup("Failed to import file. Check the logs.", "red")
+
+
 # Return selected user from combobox as dictionary
 # @param frame_root -> frame obj which will destroy
 # @param chosenUser -> str from combobox
 # @return a dictionary
 #Αλλαγή λόγο circular import
-def selected_user(frame_root, chosenUser):
-    tk_root = frame_root.winfo_toplevel() 
-    with open(users_file, 'r') as f:
-        reader = csv.DictReader(f)
-        data = list(reader)
+# def selected_user(frame_root, chosenUser):
+#     # print("3 Root type:", type(frame_root))
+#     tk_root = frame_root.winfo_toplevel() 
+#     # print("4 Root type:", type(tk_root))
+#     with open(users_file, 'r') as f:
+#         reader = csv.DictReader(f)
+#         data = list(reader)
+#         print("data:",data)
     
-        for user in data:
-            if (user['name'] == chosenUser):
-                # frame_root.destroy()  #refactor
-                user_activities_route(tk_root, user['name'])
-                # print(f"You choose user, with id: {user['id']} and name: {user['name']}")
-                # return user
+#         for user in data:
+#             if (user['name'] == chosenUser):
+#                 # frame_root.destroy()  #refactor
+#                 # print("2 the root is :",frame_root)
+#                 user_activities_route(tk_root, user['name'])
+#                 # print(f"You choose user, with id: {user['id']} and name: {user['name']}")
+#                 # return user
+
+def selected_user(frame_root, chosenUser):
+    print("Chose is ",chosenUser)
+    if chosenUser=="":
+        create_users_page("display_all", frame_root)
+        return
+    real_root = frame_root.winfo_toplevel() #fix
+    user_activities_route(real_root, chosenUser)
+
     
 
 def main():
@@ -314,7 +360,7 @@ class activitiesUser:
         time_obligation_format=format_time_reverse(obligation_time)
         time_free_format=format_time_reverse(free_time)
 
-        message = f"Obligation Time: {time_obligation_format["hours"]}:{time_obligation_format["mins"]} minutes\nFree Time: {time_free_format["hours"]}:{time_free_format["mins"]}minutes"
+        message = f"Υπωχρετικές είναι {time_obligation_format["hours"]} ώρες και {time_obligation_format["mins"]} λεπτά\nΕλεύθερου Χρόνου είναι {time_free_format["hours"]} ώρες και {time_free_format["mins"]} λεπτά"
         self.show_info_window("Total Duration", message)
     
     def calculate_averages(self):
@@ -344,8 +390,8 @@ class activitiesUser:
         average_free_time = total_free_time / free_time_count if free_time_count > 0 else 0
 
         message = (
-            f"Ο μέσος όρος των υποχρεωτικών είναι {average_obligation:.2f} λεπτά\n"
-            f"Ο μέσος όρος ελε΄θυερου χρόνου είναι {average_free_time:.2f} λεπτά"
+            f"Ο μέσος όρος των Υποχρεωτικών είναι {average_obligation:.2f} λεπτά\n"
+            f"Ο μέσος όρος Ελεύθερου Χρόνου είναι {average_free_time:.2f} λεπτά"
         )
         self.show_info_window("Average Duration", message)
 
@@ -554,7 +600,7 @@ class Graph:
         self.root.geometry("800x600")
         self.root.title("My Application")
         
-        self.button = Button(root, text="Back", command=lambda: user_activities_route(root, username))
+        self.button = Button(root, text="Πίσω", command=lambda: user_activities_route(root, username))
         self.button.pack(pady=10)
         self.weekly_limit_minutes = 10080
         self.generate_graph(username)
@@ -562,7 +608,7 @@ class Graph:
     def generate_graph(self, username):
         activities = load_activities(username)
         if not activities:
-            Label(self.root, text="No activities to display.", fg="red").pack(pady=20)
+            Label(self.root, text="Δεν υπάρχουν δραστηριότητες.", fg="red").pack(pady=20)
             return
 
         obligation_time = 0
@@ -594,7 +640,7 @@ class Graph:
                 continue
 
         if total_time == 0:
-            Label(self.root, text="There are no possible activities inside the limit.", fg="red").pack(pady=20)
+            Label(self.root, text="Δεν υπάρχουν πιθανές δραστηριότητες μέσα στα όρια.", fg="red").pack(pady=20)
             return
 
         # Δημιουργία δύο γραφημάτων δίπλα-δίπλα
