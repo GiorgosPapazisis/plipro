@@ -50,7 +50,7 @@ class Users():
             print("Το όνομα του χρήστη δεν μπορεί να παραμείνει κενό")
             create_popup("Εισάγετε όνομα χρήστη. Δεν μπορεί να είναι κενό", "red")
         else:
-            with open(users_file, 'r', newline='') as f:
+            with open(users_file, 'r', newline='', encoding='utf-8') as f:
                 username_exists = False
                 reader = csv.DictReader(f)
 
@@ -68,7 +68,7 @@ class Users():
                 else:
                     entry_widget.delete(0, END)
                     last_id = None
-                    with open(users_file, 'r', newline='') as f:
+                    with open(users_file, 'r', newline='', encoding='utf-8') as f:
                         reader = csv.DictReader(f)
                         for row in reader:
                             if row and row['id'].isdigit():
@@ -171,6 +171,16 @@ def create_users_page(message, frame_root):
                 final_username = f"{username}({counter})"
                 dest_path = os.path.join(dest_dir, f"{final_username}.csv")
             copyfile(file_path, dest_path)
+            with open(users_file, 'a', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=usersFile_header)
+                # Auto-increment ID based on current file
+                last_id = 9
+                with open(users_file, 'r', newline='', encoding='utf-8') as r:
+                    reader = csv.DictReader(r)
+                    for row in reader:
+                        if row['id'].isdigit():
+                            last_id = max(last_id, int(row['id']))
+                writer.writerow({'id': last_id + 1, 'name': final_username})
             create_popup(f"File imported successfully as user '{final_username}'", "green")
 
         #refresh gui
@@ -211,6 +221,8 @@ def selected_user(frame_root, chosenUser):
         return
     real_root = frame_root.winfo_toplevel() #fix
     user_activities_route(real_root, chosenUser)
+
+
 
     
 
@@ -603,6 +615,7 @@ class Graph:
         self.button = Button(root, text="Πίσω", command=lambda: user_activities_route(root, username))
         self.button.pack(pady=10)
         self.weekly_limit_minutes = 10080
+        sort_activities(username)
         self.generate_graph(username)
 
     def generate_graph(self, username):
@@ -624,7 +637,8 @@ class Graph:
                 activity_type = activity["activity_type"]
 
                 if total_time + duration > self.weekly_limit_minutes:
-                    break
+                    continue
+                    #break; #refactored
 
                 if activity_type == "Υποχρεωτική":
                     obligation_time += duration
@@ -633,8 +647,9 @@ class Graph:
 
                 total_time += duration
 
-                feasible_activity_names.append(activity["activity_name"])
+                feasible_activity_names.append(f"{activity['activity_name']} ({duration}m)")
                 feasible_activity_durations.append(duration)
+
             except Exception as e:
                 print(e)
                 continue
@@ -857,13 +872,18 @@ def sort_activities(username):
                 print("error")
 
 
-        new_free_time = sorted(free_time, key=lambda x: x[3])
-        new_mandatory = sorted(mandatory, key=lambda x: x[3])
+        new_free_time = sorted(free_time, key=lambda x: int(x[3]),reverse=True)
+        
+        new_mandatory = sorted(mandatory, key=lambda x: int(x[3]), reverse=True)
+        
 
-
+    print("Old Free Time")
     print(free_time)
+    print("New Free Time")
     print(new_free_time)
+    print("Old Mandatory")
     print(mandatory)
+    print("New Mandatory")
     print(new_mandatory)
     newlines=new_mandatory+new_free_time
     print(newlines)

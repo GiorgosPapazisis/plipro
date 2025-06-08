@@ -42,7 +42,7 @@ def check_csvFolder():
 # If not found -> create users.csv file with headers
 def check_usersFile():
     try:
-        with open(users_file, 'r') as f:
+        with open(users_file, 'r', encoding='utf-8') as f:
             file = f.readline()
             if not file:
                 print("File is empty")
