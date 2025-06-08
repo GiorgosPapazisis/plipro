@@ -185,7 +185,10 @@ def create_users_page(message, frame_root):
 
         #refresh gui
             # create_users_page("display_all", frame_root)
-            user_activities_route(frame_root,final_username)
+            # user_activities_route(frame_root,final_username)
+            real_root = frame_root.winfo_toplevel()
+            user_activities_route(real_root, final_username)
+
 
         except Exception as e:
             print(f"Error during import: {e}")
