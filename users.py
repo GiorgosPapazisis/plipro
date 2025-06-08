@@ -295,7 +295,7 @@ class activitiesUser:
         info_window.geometry("400x150")
 
         label = Label(info_window, text=message, padx=20, pady=20, justify="left")
-        label.pack(expand=True)
+        label.pack(expand=True) 
 
     def calculate_sums(self):
         activities = load_activities(self.username)
