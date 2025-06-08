@@ -32,7 +32,7 @@ class Users():
 
     # Save new Users obj to users.csv
     def save_newUser(self):
-        with open(users_file, 'a', newline='') as f:
+        with open(users_file, 'a', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=usersFile_header)
             writer.writerow({'id' : self.id, 'name' : self.name})
 
