@@ -17,8 +17,8 @@ usersFile_header = ['id', 'name']
 
 
 # Check if csv folder exists
-# True -> calls check_usersFile()
-# False -> create folder and calls check_usersFile()
+# True -> msg
+# False -> make directory, msg
 def check_csvFolder():
     # If csv folder exists
     if os.path.exists(csv_folder):
@@ -155,7 +155,7 @@ def invalidFile_fix(file):
             
             # Error headers check
             headers = lines[0]
-            if (headers != ['id', 'name']):
+            if (headers != usersFile_header):
                 print("Wrong headers. Fixing headers...")
                 create_headers(file)
                 print("Headers fixed successfully\nYour file is valid\n\t- Validation check passed successfully")
@@ -277,22 +277,6 @@ def import_file(window_root, refresh_callback):
                print(f"An error has occurred {error}") 
 
 
-# Return selected user from combobox as dictionary
-# @param frame_root -> frame obj which will destroy
-# @param chosenUser -> str from combobox
-# @return a dictionary
-# def selected_user(frame_root, chosenUser):
-#     with open(users_file, 'r') as f:
-#         reader = csv.DictReader(f)
-#         data = list(reader)
-    
-#         for user in data:
-#             if (user['name'] == chosenUser):
-#                 # frame_root.destroy()  #refactor
-                
-#                 user_activities_route(frame_root,user['name'])
-#                 print(f"You choose user, with id: {user['id']} and name: {user['name']}")
-#                 return user
     
 
 
