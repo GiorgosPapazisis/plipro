@@ -3,6 +3,11 @@ import os
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import *
+from shutil import copyfile
+from users import create_users_page,user_activities_route
+
+
+
 
 
 
@@ -228,59 +233,88 @@ def copy_files_content(users_imported_file, new_usersFile):
 # @param window_root -> pass main frame root
 # @param refresh_callback -> pass a function, in order to handle undefined error
 # @return 
-def import_file(window_root, refresh_callback):
-    # Initial var in file's path
-    file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Csv files", ".csv")])
+# def import_file(window_root, refresh_callback):
+#     # Initial var in file's path
+#     file_path = filedialog.askopenfilename(title="Select a file", filetypes=[("Csv files", ".csv")])
      
-    # If file's path exist  
-    if file_path:
-        # Validation check of file
-        msg = file_validation(file_path)
+#     # If file's path exist  
+#     if file_path:
+#         # Validation check of file
+#         msg = file_validation(file_path)
     
-        # If file needs fix
-        if msg == 'need_fix':
-            # create a popup window
-            popup = Toplevel()
-            popup.title("Warning")
-            popup.geometry('400x100')
-            Label(popup, text="Errors need fixing. Do you want to fix them for you?", fg='red').pack()
+#         # If file needs fix
+#         if msg == 'need_fix':
+#             # create a popup window
+#             popup = Toplevel()
+#             popup.title("Warning")
+#             popup.geometry('400x100')
+#             Label(popup, text="Errors need fixing. Do you want to fix them for you?", fg='red').pack()
 
-            # Yes btn function, in order to fix imported file
-            def fix_refresh(): 
-                try:
-                    # Fix file
-                    fixedFile_msg = invalidFile_fix(file_path)
-                    # Copy file's data
-                    copy_files_content(file_path, users_file)
-                    popup.destroy()
-                    # Refresh window
-                    refresh_callback(fixedFile_msg, window_root)
-                    # Create popup, success msg
-                    create_popup('File imported successfully', 'green')
-                except Exception as error:
-                    print(f"An error has occurred {error}")
+#             # Yes btn function, in order to fix imported file
+#             def fix_refresh(): 
+#                 try:
+#                     # Fix file
+#                     fixedFile_msg = invalidFile_fix(file_path)
+#                     # Copy file's data
+#                     copy_files_content(file_path, users_file)
+#                     popup.destroy()
+#                     # Refresh window
+#                     refresh_callback(fixedFile_msg, window_root)
+#                     # Create popup, success msg
+#                     create_popup('File imported successfully', 'green')
+#                 except Exception as error:
+#                     print(f"An error has occurred {error}")
 
-            # Yes / No btns on popup
-            Button(popup, text='Yes', command=lambda: fix_refresh()).pack()
-            Button(popup, text='Cancel', command=popup.destroy).pack()
-        else:
-            try:
-                # Copy file's data
-                copy_files_content(file_path, users_file)
-                # Fix file(optional), in order to save returned msg of what kind window to create(empty / display_all)
-                fixedFile_msg = invalidFile_fix(users_file)
-                # Refresh window
-                refresh_callback(fixedFile_msg, window_root)
-                # Create popup, success msg
-                create_popup(f"Your file: {file_path}, is valid\nImported successful", "green")
-            except Exception as error:
-               print(f"An error has occurred {error}") 
+#             # Yes / No btns on popup
+#             Button(popup, text='Yes', command=lambda: fix_refresh()).pack()
+#             Button(popup, text='Cancel', command=popup.destroy).pack()
+#         else:
+#             try:
+#                 # Copy file's data
+#                 copy_files_content(file_path, users_file)
+#                 # Fix file(optional), in order to save returned msg of what kind window to create(empty / display_all)
+#                 fixedFile_msg = invalidFile_fix(users_file)
+#                 # Refresh window
+#                 refresh_callback(fixedFile_msg, window_root)
+#                 # Create popup, success msg
+#                 create_popup(f"Your file: {file_path}, is valid\nImported successful", "green")
+#             except Exception as error:
+#                print(f"An error has occurred {error}") 
 
 
     
 
 
+# def import_file(frame_root):
+#     file_path = filedialog.askopenfilename(title="Select a CSV file", filetypes=[("CSV Files", "*.csv")])
 
+#     if not file_path:
+#         return
+#     file_name = os.path.basename(file_path)
+#     username = os.path.splitext(file_name)[0]
+#     if not username:
+#         create_popup("Could not extract a valid username from the file name.", "red")
+#         return
+#     try:
+#         dest_dir = os.path.join(base_dir, "csv")
+#         os.makedirs(dest_dir, exist_ok=True)
+#         counter = 0
+#         final_username = username
+#         dest_path = os.path.join(dest_dir, f"{final_username}.csv")
+#         while os.path.exists(dest_path):
+#             counter += 1
+#             final_username = f"{username}({counter})"
+#             dest_path = os.path.join(dest_dir, f"{final_username}.csv")
+#         copyfile(file_path, dest_path)
+#         create_popup(f"File imported successfully as user '{final_username}'", "green")
+
+#     #refresh gui
+#         # create_users_page("display_all", frame_root)
+#         user_activities_route(frame_root,final_username)
+
+#     except Exception as e:
+#         print(f"Error during import: {e}")
+#         create_popup("Failed to import file. Check the logs.", "red")
 
 
 
