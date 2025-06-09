@@ -375,7 +375,7 @@ class activitiesUser:
         time_obligation_format=format_time_reverse(obligation_time)
         time_free_format=format_time_reverse(free_time)
 
-        message = f"Υπωχρετικές είναι {time_obligation_format["hours"]} ώρες και {time_obligation_format["mins"]} λεπτά\nΕλεύθερου Χρόνου είναι {time_free_format["hours"]} ώρες και {time_free_format["mins"]} λεπτά"
+        message = f"Υποχρεωτικές είναι {time_obligation_format["hours"]} ώρες και {time_obligation_format["mins"]} λεπτά\nΕλεύθερου Χρόνου είναι {time_free_format["hours"]} ώρες και {time_free_format["mins"]} λεπτά"
         self.show_info_window("Total Duration", message)
     
     def calculate_averages(self):
