@@ -60,7 +60,7 @@ def check_usersFile():
 # @param file -> str full path to file, in order to create headers
 # @return void
 def create_headers(file):
-    with open(file, 'w', newline='') as csvfile:
+    with open(file, 'w', newline='',encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=usersFile_header)
         writer.writeheader()
 
@@ -69,7 +69,7 @@ def create_headers(file):
 # @param file -> file to check
 # @return boolean 
 def is_file_empty(file):
-    with open(file, 'r') as f:
+    with open(file, 'r',encoding='utf-8') as f:
         first_line = f.readline()
         return not first_line.strip()
     
@@ -81,7 +81,7 @@ def file_validation(file):
     valid_rows = []
     invalid_rows = []
     try: 
-        with open(file, 'r') as file_toCheck:
+        with open(file, 'r',encoding='utf-8') as file_toCheck:
             reader = csv.reader(file_toCheck)
             lines = list(reader)
             # Empty file check
@@ -133,7 +133,7 @@ def invalidFile_fix(file):
     invalid_rows = []
 
     try:
-        with open(file, 'r', newline='') as csv_file:
+        with open(file, 'r', newline='',encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file)
             lines = list(reader)
 
@@ -177,7 +177,7 @@ def invalidFile_fix(file):
             # Invalid rows delete
             if invalid_rows:
                 print("Deleting error rows...")
-                with open(file, 'w', newline ='') as f:
+                with open(file, 'w', newline ='',encoding='utf-8') as f:
                     writer = csv.DictWriter(f, fieldnames=usersFile_header)
                     writer.writeheader()
                     writer.writerows(valid_rows)
@@ -216,10 +216,10 @@ def create_popup(msg, color):
 # @return void
 def copy_files_content(users_imported_file, new_usersFile):
     try:
-        with open(users_imported_file, 'r') as users_oldFile:
+        with open(users_imported_file, 'r', encoding='utf-8') as users_oldFile:
             reader = csv.DictReader(users_oldFile)
             usersData = list(reader)
-            with open(new_usersFile, 'w', newline='') as newUsers_csv:
+            with open(new_usersFile, 'w', newline='',encoding='utf-8') as newUsers_csv:
                 writer = csv.DictWriter(newUsers_csv, fieldnames=usersFile_header)
                 writer.writeheader()
                 for row in usersData:
